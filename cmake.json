@@ -1,0 +1,161 @@
+{
+  // Place your snippets for cmake here. Each snippet is defined under a snippet name and has a prefix, body and
+  // description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+  // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the
+  // same ids are connected.
+  // Example:
+  // "Print to console": {
+  // 	"prefix": "log",
+  // 	"body": [
+  // 		"console.log('$1');",
+  // 		"$2"
+  // 	],
+  // 	"description": "Log output to console"
+  // }
+  "init project executable": {
+    "prefix": "init project executable",
+    "body": [
+      "cmake_minimum_required(VERSION 3.11.0)\n",
+      "project(${1:name} VERSION 0.1.0)\n",
+      "set(SOURCES",
+      "  \"src/main.cpp\"",
+      ")\n",
+      "set(MY_LIBRARIES \"\")\n",
+      "option(USE_TESTS \"Enable building of unit tests\" OFF)",
+      "option(USE_CCACHE \"Use ccache to speed up recompilation\" ON)\n",
+      "if(USE_CCACHE)",
+      "  find_program(CCACHE_FOUND ccache)",
+      "  if(CCACHE_FOUND)",
+      "    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE \\${CCACHE_FOUND})",
+      "    message(\"Ccache will be used to speed up recompilation.\")",
+      "  else()",
+      "    message(ERROR \"Ccache cannot be found. Please install ccache to speed up recompilation.\")",
+      "  endif()",
+      "endif()\n",
+      "add_executable(\\${PROJECT_NAME} WIN32)\n",
+      "set_target_properties(",
+      "  \\${PROJECT_NAME} PROPERTIES",
+      "  CXX_STANDARD 20",
+      "  CXX_STANDARD_REQUIRED ON",
+      "  CXX_EXTENSIONS NO",
+      "  DEBUG_POSTFIX \"_d\"",
+      ")\n",
+      "target_sources(\\${PROJECT_NAME} PRIVATE",
+      "  \\${SOURCES}",
+      ")\n",
+      "target_include_directories(\\${PROJECT_NAME} PUBLIC \"include/\")\n",
+      "find_package(fmt)\n",
+      "#Libraries",
+      "foreach(LIBRARY \\${MY_LIBRARIES})",
+      "  add_subdirectory(\"libs/\\${LIBRARY}\")",
+      "endforeach(LIBRARY )\n",
+      "target_link_libraries(\\${PROJECT_NAME} PRIVATE fmt::fmt \\${MY_LIBRARIES})\n",
+      "if(USE_TESTS)",
+      "#Tests in subdirectory test",
+      "  enable_testing()",
+      "  add_subdirectory(test)",
+      "endif(USE_TESTS)\n"
+    ],
+    "description": "init project executable"
+  },
+  "init project library": {
+    "prefix": "init project library",
+    "body": [
+      "cmake_minimum_required(VERSION 3.11.0)\n",
+      "set(LIBRARY_NAME ${1:name})\n",
+      "project(\\${LIBRARY_NAME} VERSION 0.1.0)\n",
+      "set(USE_TESTS OFF)\n",
+      "add_library(\\${LIBRARY_NAME} STATIC)\n",
+      "set_target_properties(",
+      "  \\${LIBRARY_NAME} PROPERTIES",
+      "  CXX_STANDARD 20",
+      "  CXX_STANDARD_REQUIRED ON",
+      "  CXX_EXTENSIONS NO",
+      "  DEBUG_POSTFIX \"_d\"",
+      ")\n",
+      "target_sources(\\${LIBRARY_NAME} PRIVATE",
+      "  \"src/${1:name}.cpp\"",
+      ")\n",
+      "target_include_directories(\\${LIBRARY_NAME} PRIVATE",
+      "  \\$<BUILD_INTERFACE:\\${CMAKE_CURRENT_SOURCE_DIR}/include/\\${LIBRARY_NAME}>",
+      "  \\$<INSTALL_INTERFACE:include/\\${LIBRARY_NAME}>",
+      ")\n",
+      "target_include_directories(\\${LIBRARY_NAME} PUBLIC",
+      "  \\$<BUILD_INTERFACE:\\${CMAKE_CURRENT_SOURCE_DIR}/include/>",
+      "  \\$<INSTALL_INTERFACE:include/>",
+      ")\n",
+      "if(USE_TESTS)",
+      "#Tests in subdirectory test",
+      "  enable_testing()",
+      "  add_subdirectory(test)",
+      "endif(USE_TESTS)\n"
+    ],
+    "description": "init project library"
+  },
+  "ccache": {
+    "prefix": "ccache",
+    "body": [
+      "find_program(CCACHE_PROGRAM ccache)",
+      "if(CCACHE_PROGRAM)",
+      "  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE \"\\${CCACHE_PROGRAM}\")",
+      "endif()\n"
+    ],
+    "description": "ccache template"
+  },
+  "init tests catch2": {
+    "prefix": "init tests catch2",
+    "body": [
+      "#Tests",
+      "set(TEST_NAME \"test_${1:tested_library_name}\")",
+      "find_package(Catch2 REQUIRED)\n",
+      "add_executable(\\${TEST_NAME} \"\")",
+      "target_link_libraries(\\${TEST_NAME} Catch2::Catch2WithMain ${1:tested_library_name})\n",
+      "target_sources(\\${TEST_NAME} PRIVATE",
+      "  \"${1:tested_library_name}_test.cpp\"",
+      "  #other test files",
+      ")\n",
+      "target_include_directories(\\${TEST_NAME} PUBLIC \"../include/\")\n",
+      "set_target_properties(\\${TEST_NAME} PROPERTIES",
+      "  CXX_STANDARD 20",
+      "  CXX_STANDARD_REQUIRED ON",
+      "  CXX_EXTENSIONS NO",
+      ")\n",
+      "set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)",
+      "include(CTest)",
+      "enable_testing()",
+      "include(Catch)",
+      "catch_discover_tests(\\${TEST_NAME})"
+    ],
+    "description": "init tests catch2"
+  },
+  "wxWidgets": {
+    "prefix": "wxWidgets",
+    "body": [
+      "",
+      "#wxWidgets",
+      "if(UNIX)",
+      "  set(wxWidgets_CONFIG_OPTIONS --toolkit=gtk3)",
+      "endif(UNIX)\n",
+      "if(UNIX OR MSYS)",
+      "  message(\"UNIX style!\")",
+      "  set(wxWidgets_FIND_STYLE \"unix\")",
+      "endif()\n",
+      "if(MSYS)",
+      "  set(WIN_RESOURCE \"res/resource.rc\") #add application icon to this file",
+      "endif(MSYS)\n",
+      "find_package(wxWidgets REQUIRED)\n",
+      "if(!wxWidgets_FOUND)",
+      "  error(\"Could not find WxWidgets\")",
+      "endif(wxWidgets_FOUND)\n",
+      "include(\"\\${wxWidgets_USE_FILE}\")\n",
+      "if(CMAKE_BUILD_TYPE MATCHES \"Debug\")",
+      "  set(wxWidgets_USE_DEBUG ON)",
+      "endif(CMAKE_BUILD_TYPE MATCHES \"Debug\")\n",
+      "target_link_libraries(",
+      "  \\${PROJECT_NAME}",
+      "  \\${wxWidgets_LIBRARIES}",
+      ")"
+    ],
+    "description": "wxWidgets template"
+  }
+}
