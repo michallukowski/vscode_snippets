@@ -142,7 +142,7 @@
       "  message(\"UNIX style!\")",
       "  set(wxWidgets_FIND_STYLE \"unix\")",
       "endif()\n",
-      "if(MSYS)",
+      "if(UNIX OR MSYS)",
       "  set(WIN_RESOURCE \"res/resource.rc\") # add application icon to this file",
       "endif(MSYS)\n",
       "find_package(wxWidgets REQUIRED)\n",
