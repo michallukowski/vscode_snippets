@@ -105,7 +105,8 @@
   "init tests catch2": {
     "prefix": "init tests catch2",
     "body": [
-      "#Tests",
+      "",
+      "#--------------------Tests--------------------\n",
       "set(TEST_NAME \"test_${1:tested_library_name}\")",
       "find_package(Catch2 REQUIRED)\n",
       "add_executable(\\${TEST_NAME} \"\")",
@@ -124,7 +125,8 @@
       "include(CTest)",
       "enable_testing()",
       "include(Catch)",
-      "catch_discover_tests(\\${TEST_NAME})"
+      "catch_discover_tests(\\${TEST_NAME})\n"
+      "#------------------End Tests------------------\n",
     ],
     "description": "init tests catch2"
   },
@@ -132,7 +134,7 @@
     "prefix": "wxWidgets",
     "body": [
       "",
-      "#wxWidgets",
+      "#------------------wxWidgets------------------\n",
       "option(USE_GTK3_GUI \"Use GTK3 GUI toolkit\" OFF)\n",
       "if(UNIX OR USE_GTK3_GUI)",
       "  message(\"GTK3 GUI toolkit will be used.\")",
@@ -156,8 +158,65 @@
       "target_link_libraries(",
       "  \\${PROJECT_NAME}",
       "  \\${wxWidgets_LIBRARIES}",
-      ")"
+      ")\n"
+      "#----------------End wxWidgets----------------\n",
     ],
     "description": "wxWidgets template"
+  },
+  "install section": {
+    "prefix": "install section",
+    "body": [
+      "",
+      "#-----------------Installation-----------------\n",
+      "set(CMAKE_INSTALL_PREFIX \\${CMAKE_SOURCE_DIR}/install/\\${PROJECT_NAME}_\\${CMAKE_PROJECT_VERSION})\n",
+      "if(MSYS)",
+      "  set(INSTALL_BIN_DIR \".\")",
+      "  set(INSTALL_SHARE_DIR \".\")",
+      "  set(INSTALL_LIB_DIR \".\")\n",
+      "  #Make sure you specified environment variable MSYS2_INSTALL_PATH where msys2 is installed e.g. C:/msys64",
+      "  set(MSYS2_BIN_DIR \"\\$ENV{MSYS2_INSTALL_PATH}/usr/bin/\")",
+      "  find_path(MINGW_PATH bin/cmake.exe)",
+      "  set(MINGW_BIN_DIR \"\\${MINGW_PATH}/bin\")\n",
+      "  execute_process(",
+      "    COMMAND \\${MSYS2_BIN_DIR}bash -c \"ldd \\${PROJECT_NAME}.exe | grep -v -e '=> /c/Windows' | grep -o -P '^[^ =>]+'\" ,",
+      "    WORKING_DIRECTORY \\${CMAKE_BINARY_DIR}",
+      "    OUTPUT_VARIABLE MINGW_DEPENDENCIES",
+      "  )\n",
+      "  if(NOT \\${MINGW_DEPENDENCIES} STREQUAL \"\")",
+      "    string(REPLACE \"\\t\" \"\" MINGW_DEPENDENCIES \\${MINGW_DEPENDENCIES})",
+      "    string(REPLACE \"\\n\" \";\" MINGW_DEPENDENCIES \\${MINGW_DEPENDENCIES})\n",
+      "    foreach(LIB IN LISTS MINGW_DEPENDENCIES)",
+      "      file(GLOB LIBS \"\\${MINGW_BIN_DIR}/\\${LIB}\")",
+      "      list(APPEND MINGW_FILES \\${LIBS})",
+      "    endforeach()\n",
+      "    install(FILES \\${MINGW_FILES} DESTINATION \\${INSTALL_BIN_DIR})",
+      "  endif()\n"
+      "elseif(UNIX)",
+      "  set(INSTALL_BIN_DIR \"bin\")",
+      "  set(INSTALL_SHARE_DIR \"share/\\${PROJECT_NAME}\")",
+      "  set(INSTALL_LIB_DIR \"lib/\\${PROJECT_NAME}\")",
+      "endif()\n",
+      "install(FILES",
+      "  \"\\${CMAKE_SOURCE_DIR}/README.md\"",
+      "  \"\\${CMAKE_SOURCE_DIR}/CHANGELOG.md\"",
+      "  DESTINATION \"\\${INSTALL_BIN_DIR}/\"",
+      ")\n",
+      "install(DIRECTORY ",
+      "  \"\\${CMAKE_SOURCE_DIR}/files\"",
+      "  DESTINATION \"\\${INSTALL_BIN_DIR}/\"",
+      ")\n",
+      "install(TARGETS \\${PROJECT_NAME}",
+      "  BUNDLE DESTINATION \\${INSTALL_BIN_DIR}",
+      "  RUNTIME DESTINATION \\${INSTALL_BIN_DIR}",
+      ")\n",
+      "include(InstallRequiredSystemLibraries)",
+      "# set(CPACK_RESOURCE_FILE_LICENSE \"\\${CMAKE_CURRENT_SOURCE_DIR}/License.txt\")",
+      "set(CPACK_PACKAGE_VERSION_MAJOR \"\\${Tutorial_VERSION_MAJOR}\")",
+      "set(CPACK_PACKAGE_VERSION_MINOR \"\\${Tutorial_VERSION_MINOR}\")",
+      "set(CPACK_GENERATOR \"ZIP\")",
+      "include(CPack)\n",
+      "#---------------End Installation---------------\n",
+    ],
+    "description": "install section template"
   }
 }
