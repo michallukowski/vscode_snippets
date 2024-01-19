@@ -125,8 +125,8 @@
       "include(CTest)",
       "enable_testing()",
       "include(Catch)",
-      "catch_discover_tests(\\${TEST_NAME})\n"
-      "#------------------End Tests------------------\n",
+      "catch_discover_tests(\\${TEST_NAME})\n",
+      "#------------------End Tests------------------\n"
     ],
     "description": "init tests catch2"
   },
@@ -158,8 +158,8 @@
       "target_link_libraries(",
       "  \\${PROJECT_NAME}",
       "  \\${wxWidgets_LIBRARIES}",
-      ")\n"
-      "#----------------End wxWidgets----------------\n",
+      ")\n",
+      "#----------------End wxWidgets----------------\n"
     ],
     "description": "wxWidgets template"
   },
@@ -174,7 +174,7 @@
       "  set(INSTALL_SHARE_DIR \".\")",
       "  set(INSTALL_LIB_DIR \".\")\n",
       "  #Make sure you specified environment variable MSYS2_INSTALL_PATH where msys2 is installed e.g. C:/msys64",
-      "  if(NOT DEFINED ENV{MSYS2_INSTALL_PATH})"
+      "  if(NOT DEFINED ENV{MSYS2_INSTALL_PATH})",
       "    message(WARNING \"Not specified \\\"cmake.environment\\\" variable \\\"MSYS2_INSTALL_PATH\\\" where msys2 is installed e.g. C:/msys64\")",
       "  else()",
       "    set(MSYS2_BIN_DIR \"\\$ENV{MSYS2_INSTALL_PATH}/usr/bin/\")",
@@ -219,7 +219,7 @@
       "set(CPACK_PACKAGE_VERSION_MINOR \"\\${Tutorial_VERSION_MINOR}\")",
       "set(CPACK_GENERATOR \"ZIP\")",
       "include(CPack)\n",
-      "#---------------End Installation---------------\n",
+      "#---------------End Installation---------------\n"
     ],
     "description": "install section template"
   }
