@@ -30,7 +30,7 @@
       "    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE \\${CCACHE_FOUND})",
       "    message(\"Ccache will be used to speed up recompilation.\")",
       "  else()",
-      "    message(ERROR \"Ccache cannot be found. Please install ccache to speed up recompilation.\")",
+      "    message(WARNING \"Ccache cannot be found. Please install ccache to speed up recompilation.\")",
       "  endif()",
       "endif()\n",
       "add_executable(\\${PROJECT_NAME} WIN32)\n",
@@ -106,7 +106,9 @@
       "find_program(CCACHE_PROGRAM ccache)",
       "if(CCACHE_PROGRAM)",
       "  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE \"\\${CCACHE_PROGRAM}\")",
-      "endif()\n"
+      "else()",
+      "  message(WARNING \"Ccache cannot be found. Please install ccache to speed up recompilation.\")",
+      "endif()\n",
     ],
     "description": "ccache template"
   },
